@@ -1,27 +1,62 @@
-// TODO: make this work.
-// if yuo go to localhost:3000 the app
-// there is expected crud to be working here
+// Requires (with CommonJS)
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var _ = require('lodash');
 
-// express.static will serve everything
-// with in client as a static resource
-// also, it will server the index.html on the
-// root of that directory on a GET to '/'
+// Middleware 
 app.use(express.static('client'));
-
-// body parser makes it possible to post JSON to the server
-// we can accss data we post on as req.body
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
 
 var lions = [];
 var id = 0;
 
-// TODO: make the REST routes to perform CRUD on lions
+// Get all lions
+app.get('/lions', (req, res) => {
+	res.json(lions)	
+})
 
-app.listen(3000);
-console.log('on port 3000');
+// Get a single lion
+app.get('/lions/:id', (req, res) => {
+	var lion = _.find(lions, {
+		id: req.params.id
+	})
+	res.json(lion || {})
+})
+
+// Add a lion
+app.post('/lions', (req, res) => {
+	var lion = req.body
+	id++
+	lion.id = id + ''
+	lions.push(lion)
+	res.json(lion)
+})
+
+// Update a lion
+app.put('/lions/:id', (req, res) => {
+	var update = req.body
+	update.id ? delete update.id : undefined
+	var lion = lions.findIndex(findLion)
+	var updatedLion = lions.assign(lions[lion], update)
+	res.json(updatedLion)
+})
+
+// Delete a lion
+app.delete('/lions/:id', (req, res) => {
+	var lion = lions.findIndex(findLion)
+	var deleted = lions[lion]
+	lions.splice(lions, 1)
+	res.json(deleted)
+})
+
+app.listen(3000, (e) => {
+	e ? console.log(e) : console.log('on port 3000');
+});
+// ------------------------------------------------------------------ Function Declarations ------------------------------------------------------------------ 
+
+function findLion(element) {
+	var id = req.params.id
+	return lions[element].id === id
+}
