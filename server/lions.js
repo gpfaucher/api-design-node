@@ -62,4 +62,4 @@ lionRouter.put('/:id', function(req, res) {
   }
 });
 
-module.exports = lionRouter;
+module.exports = lionRouter
